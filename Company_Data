@@ -40,4 +40,4 @@ for(i in 1:500)
   acc<-c(acc,sum(diag(a))/sum(a))
 }
 summary(acc)  
-
+plot(fittree)
