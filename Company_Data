@@ -1,0 +1,43 @@
+install.packages("C50")
+library(C50)
+library(caret)
+company<- read.csv("C:/Users/blacksnake/Downloads/Company_data.csv")
+
+highsales<- ifelse(company$Sales <9,"No","Yes")
+highsales
+
+company1<- data.frame(company[2:11],highsales)
+View(company1)
+
+company_training<- company1[1:351,]
+company_testing<- company1[352:400,]
+
+dcsn_model<- C5.0(company_training$highsales~., data = company_training)
+summary (dcsn_model)
+
+pred<- predict.C5.0(dcsn_model,company_testing[,-11])
+pred
+
+a<- table(company_testing$highsales,pred)
+sum(diag(a))/sum(a)
+plot(dcsn_model)
+
+acc<- c()
+for(i in 1:500)
+{
+  print(i)
+  
+  
+  company_training_1<- company1[1:370,]
+  company_testing_1<- company1[371:400,]
+  
+  fittree<- C5.0(company_training_1$highsales~.,data=company_training_1,trials=20)
+  ##predicting
+  pred<-predict.C5.0(fittree,company_testing_1[,-11])
+  a<-table(company_testing_1$highsales,pred)
+  ##accuracy
+  sum(diag(a))/sum(a)
+  acc<-c(acc,sum(diag(a))/sum(a))
+}
+summary(acc)  
+
