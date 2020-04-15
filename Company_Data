@@ -26,11 +26,8 @@ acc<- c()
 for(i in 1:500)
 {
   print(i)
-  
-  
   company_training_1<- company1[1:370,]
   company_testing_1<- company1[371:400,]
-  
   fittree<- C5.0(company_training_1$highsales~.,data=company_training_1,trials=20)
   ##predicting
   pred<-predict.C5.0(fittree,company_testing_1[,-11])
