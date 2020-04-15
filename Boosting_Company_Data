@@ -1,0 +1,44 @@
+install.packages("C50")
+library(C50)
+library(caret)
+company<- read.csv("C:/Users/Chetan Yewale/Downloads/Company_data.csv")
+
+highsales<- ifelse(company$Sales <9,"No","Yes")
+highsales
+
+company1<- data.frame(company[2:11],highsales)
+View(company1)
+
+##  Data Partiton For Model Building And Testing
+inTraininglocal<- createDataPartition(company1$highsales,p = .75,list = F)
+training<- company1[inTraininglocal,]
+testing<- company1[-inTraininglocal,]
+
+
+dcsn_model<- C5.0(training$highsales~., data = training,trials = 10)
+summary (dcsn_model)
+
+pred<- predict.C5.0(dcsn_model,company_testing[,-11])
+pred
+
+a<- table(company_testing$highsales,pred)
+sum(diag(a))/sum(a)
+plot(dcsn_model)
+
+acc<- c()
+for(i in 1:500)
+{
+  print(i)
+  inTraininglocal<- createDataPartition(company1$highsales,p = .85,list = F)
+  training_1<- company1[inTraininglocal,]
+  testing_1<- company1[-inTraininglocal,]
+  fittree<- C5.0(training_1$highsales~.,data=training_1,trials=20)
+  ##predicting
+  pred<-predict.C5.0(fittree,testing_1[,-11])
+  a<-table(testing_1$highsales,pred)
+  ##accuracy
+  sum(diag(a))/sum(a)
+  acc<-c(acc,sum(diag(a))/sum(a))
+}
+summary(acc)  
+
