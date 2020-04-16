@@ -1,0 +1,44 @@
+install.packages("C50")
+library(C50)
+library(caret)
+company<- read.csv("C:/Users/Chetan Yewale/Downloads/Company_data.csv")
+
+highsales<- ifelse(company$Sales <9,"No","Yes")
+table(highsales)
+
+company1<- data.frame(company[2:11],highsales)
+View(company1)
+
+company_low<- company1[highsales == "No",]
+company_high <- company1[highsales == "Yes",]
+
+train<- rbind(company_high[1:83,], company_low[1:180,])
+test<- rbind(company_high[84:114,], company_low[181:286,])
+
+dcsn_model<- C5.0(train[,-c(12)], train$highsales)
+summary (dcsn_model)
+plot(dcsn_model)
+
+pred<- predict.C5.0(dcsn_model,test[,-12])
+pred
+
+a<- table(test$highsales,pred)
+sum(diag(a))/sum(a)
+plot(pred)
+
+acc<- c()
+for(i in 1:500)
+{
+  print(i)
+  train_1<- rbind(company_high[1:95,], company_low[1:199,])
+  test_1<- rbind(company_high[96:114,], company_low[200:286,])
+  fittree<- C5.0(train_1[,-c(12)], train_1$highsales,trials=20)
+  ##predicting
+  pred<-predict.C5.0(fittree,test_1[,-12])
+  a<-table(test_1$highsales,pred)
+  ##accuracy
+  sum(diag(a))/sum(a)
+  acc<-c(acc,sum(diag(a))/sum(a))
+}
+summary(acc)  
+plot(fittree)
