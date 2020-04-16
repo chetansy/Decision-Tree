@@ -19,7 +19,7 @@ pred<- predict.C5.0(dcsn_model,company_testing[,-11])
 pred
 
 a<- table(company_testing$highsales,pred)
-sum(diag(a))/sum(a)
+sum(diag(a))/sum(a)     ## Accuracy = 71.42%
 plot(dcsn_model)
 
 acc<- c()
@@ -33,7 +33,7 @@ for(i in 1:500)
   pred<-predict.C5.0(fittree,company_testing_1[,-11])
   a<-table(company_testing_1$highsales,pred)
   ##accuracy
-  sum(diag(a))/sum(a)
+  sum(diag(a))/sum(a)      ## Accuracy = 80%
   acc<-c(acc,sum(diag(a))/sum(a))
 }
 summary(acc)  
