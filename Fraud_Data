@@ -1,0 +1,25 @@
+library(C50)
+library(caret)
+
+fraud<- read.csv(file.choose())
+taxable_income<- ifelse(fraud$Taxable.Income <=30000,"Risky","Good" )
+table(taxable_income)
+
+fraud_1<- data.frame(fraud[,-3],taxable_income)
+View(fraud_1)
+
+fraud_risky <- fraud_1[taxable_income == "Risky",]
+fraud_good <- fraud_1[taxable_income == "Good",]
+
+train<- rbind(fraud_risky[1:93,], fraud_good[1:357,])
+test<- rbind(fraud_risky[94:124,], fraud_good[357:476,])
+
+dcsn_model<- C5.0(train[,-c(7)], train$taxable_income)
+summary(dcsn_model)
+plot(dcsn_model)
+
+pred<- predict.C5.0(dcsn_model,test[,-7])
+pred
+
+a<- table(test$taxable_income,pred)
+sum(diag(a))/sum(a)                      #### Accuracy = 100%
